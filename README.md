@@ -15,7 +15,9 @@
 
 
     > Convert More K8s objects to Pojo
+    
     > Work on exclduing fileds from generated yaml not added in builder of pojos
+    
     > Develop a rest api to send yaml content as json and automate deployment
     
     
