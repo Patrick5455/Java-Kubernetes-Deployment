@@ -198,6 +198,11 @@ public class k8sYamlDeployment {
         return String.format( "Deployment Status:  %s", deploymentStatusMessage);
     }
 
+
+
+    /**
+     * Collects DeploymentYaml object and transform to yaml file internally using createCustomYamlFIle
+     * */
     public  static String executeCustomComplexDeploy(DeploymentYaml deploymentYamlParams) throws IOException {
         deploymentStatusMessage = FAILURE_DEPLOY_MESSAGE;
         File file = createCustomManifestFile(deploymentYamlParams);
@@ -232,6 +237,39 @@ public class k8sYamlDeployment {
         return String.format( "\nDeployment Status:  %s", deploymentStatusMessage);
     }
 
+
+    /**
+     * Collects file of presetManifestFile from createPresetManifestFile
+     * */
+    public static String executePresetComplexDeploy(File file){
+        deploymentStatusMessage = FAILURE_DEPLOY_MESSAGE;
+        try {
+            String[] cmd = {"sh", writeCommandToBashFile(complexDeployBashFileName, getComplexDeployCommand(file.getAbsolutePath()))};
+            Process p = Runtime.getRuntime().exec(cmd);
+            System.out.println("DOne Executing");
+            p.waitFor();
+            BufferedReader reader=new BufferedReader(new InputStreamReader(
+                    p.getInputStream()));
+            System.out.println("Getting Response");
+
+            String line;
+            StringBuilder builder = new StringBuilder();
+
+            while((line = reader.readLine()) != null) {
+                builder.append(line);
+                System.out.println(line);
+            }
+            if(builder.toString().contains("created")){
+                deploymentStatusMessage = SUCCESS_DEPLOY_MESSAGE;
+            }
+            else if (builder.toString().contains("configured")){
+                deploymentStatusMessage = EXISTING_DEPLOYMENT;
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return String.format( "Deployment Status:  %s", deploymentStatusMessage);
+    }
 
 
 
