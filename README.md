@@ -9,4 +9,4 @@
 ## Comment : The goal is to make the repo a useful resource for anyone looking to do MLOps with Java/Scala/Python/Go
 
 ### Author:
-("https://twitter.com/patrickojunde")[@Patrick 0junde]
+[@Patrick 0junde]("https://twitter.com/patrickojunde")
