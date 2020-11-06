@@ -1,10 +1,17 @@
 # Java-Kubernetes-Deployment
 
-#### About:  This Repository aims to demonstrate how to programmatically automate deployments to Kubernetes via Java (go & python for future additions)
+#### About:  
 
-#### Genre: MlOps
+- This Repository aims to demonstrate how to programmatically automate deployments to Kubernetes via Java (go & python for future additions)
 
-#### Status: WIP -- Contributions are welcome. You can reach out here -> ([@Patrick 0junde](https://twitter.com/patrickojunde))
+#### Genre: 
+
+- DevOps
+- MlOps
+
+#### Status: 
+
+- WIP -- Contributions are welcome. You can reach out here -> ([@Patrick 0junde](https://twitter.com/patrickojunde))
 
     > Convert More K8s objects to Pojo
     > Work on exclduing fileds from generated yaml not added in builder of pojos
@@ -18,7 +25,9 @@
 - SnakeYaml - Yaml Serialization/Deserialization for custome Yaml Pojo
 
     
-#### Comment : The goal is to make the repo a useful resource for anyone looking to do MLOps with Java/Scala/Python/Go. I'm thinking of making it a github project in the future. 
+#### Comment: 
+
+- The goal is to make the repo a useful resource for anyone looking to do MLOps with Java/Scala/Python/Go. I'm thinking of making it a github project in the future. 
 
 #### Author(s):
 [@Patrick 0junde](https://twitter.com/patrickojunde)
