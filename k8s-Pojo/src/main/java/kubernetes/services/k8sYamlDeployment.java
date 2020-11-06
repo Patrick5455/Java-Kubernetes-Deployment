@@ -136,7 +136,7 @@ public class k8sYamlDeployment {
 
         //Deployment metadata
         V1ObjectMeta deploymentMetadata = new V1ObjectMeta();
-        deploymentMetadata.setName("new-nginx-deployment");
+        deploymentMetadata.setName("newest-nginx-deployment");
 
         //Assemble Deployment from deploymentMetadata + deploymentSpec
         V1Deployment deployment = new V1Deployment();
@@ -264,7 +264,7 @@ public class k8sYamlDeployment {
             if(builder.toString().contains("created")){
                 deploymentStatusMessage = SUCCESS_DEPLOY_MESSAGE;
             }
-            else if (builder.toString().contains("configured")){
+            else if (builder.toString().contains("configured") | builder.toString().contains("unchanged")){
                 deploymentStatusMessage = EXISTING_DEPLOYMENT;
             }
         } catch (IOException | InterruptedException e) {

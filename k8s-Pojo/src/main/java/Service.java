@@ -13,9 +13,6 @@ public class Service {
 
 
 
-//       String message = k8sYamlDeployment.useK8sClient(TestClientApi.testNow());
-
-
         HashMap<String, String> labels = new HashMap<>();
 
         //Assemble Deployment from deploymentMetadata + deploymentSpec
@@ -60,13 +57,16 @@ public class Service {
                 .build();
 
 
-                File file = k8sYamlDeployment.createCustomManifestFile(deploymentYaml);
+        File file = k8sYamlDeployment.createCustomManifestFile(deploymentYaml);
+
+     //   String preset = k8sYamlDeployment.executePresetComplexDeploy(k8sYamlDeployment.createPresetManifestFile());
 
 
+        String custom = k8sYamlDeployment.executeCustomComplexDeploy(deploymentYaml);
 
-        String message2 = k8sYamlDeployment.executeCustomComplexDeploy(deploymentYaml);
 //
-       System.out.println(message2);
+    //   System.out.println("prseet: " + preset);
+        System.out.println("custom"+custom);
 
 
 

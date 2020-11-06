@@ -1,0 +1,17 @@
+apiVersion: api/V1
+kind: Deployment
+metadata:
+  name: newest-nginx-deployment
+spec:
+  selector:
+    matchLabels: &id001
+      app: nginx
+  template:
+    metadata:
+      labels: *id001
+    spec:
+      containers:
+      - image: nginx:1.7.9
+        name: nginx
+        ports:
+        - containerPort: 90
