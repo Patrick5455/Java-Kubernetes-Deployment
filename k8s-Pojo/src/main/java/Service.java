@@ -1,0 +1,254 @@
+import io.kubernetes.client.openapi.ApiException;
+import kubernetes.models.k8s.*;
+import kubernetes.services.K8sClientDeployment;
+import kubernetes.services.k8sYamlDeployment;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+
+public class Service {
+
+    public static void main(String[] args) throws IOException, ApiException {
+
+
+
+//       String message = k8sYamlDeployment.useK8sClient(K8sClientDeployment.testNow()) + " DOne";
+
+
+        HashMap<String, String> labels = new HashMap<>();
+
+        //Assemble Deployment from deploymentMetadata + deploymentSpec
+        DeploymentYaml deploymentYaml = DeploymentYaml.builder()
+                //apiVersion
+                .apiVersion("apps/v1")
+                //kinf
+                .kind(KindTypes.Deployment)
+                //Deployment spec - assemble Pod Selector and Pod Template
+                .spec(DeploymentSpec.builder()
+                        .selector(LabelSelector.builder()
+                                .matchLabels(LabelUtils.setAnyLabels("app", "nginx"))
+                                .build())
+                        //Pod template
+                        .template(
+                                PodTemplateSpec.builder()
+                                        //Pod metadata
+                                        .metadata(ObjectMeta.builder()
+                                                //Pod Selector
+                                                .labels(LabelUtils.setAnyLabels("app", "nginx"))
+                                                .build())
+                                        //Pod Spec
+                                        .spec(PodSpec.builder()
+                                                //Nginx Container
+                                                .containers(Arrays.asList(Container.builder()
+                                                        .name("nginx")
+                                                        .image("nginx:1.7.9")
+                                                        .ports(Arrays.asList(ContainerPort.
+                                                                builder()
+                                                                .containerPort(90)
+                                                                .build()))
+                                                        .build())
+                                                )
+                                                .build())
+                                        .build()
+                        )
+                        .build())
+                //Deployment metadata
+                .metadata(ObjectMeta.builder()
+                        .name("latest-nginx-deployment3")
+                        .build())
+                .build();
+
+
+                File file = k8sYamlDeployment.createManifestFile(deploymentYaml);
+
+
+
+        String message2 = k8sYamlDeployment.executeComplexDeploy(deploymentYaml);
+//
+       System.out.println(message2);
+
+
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

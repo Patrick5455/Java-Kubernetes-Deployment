@@ -1,0 +1,1 @@
+kubectl apply -f /home/patrick/Documents/dev/programs/personal_programs/yamlPojo/deployment.yaml

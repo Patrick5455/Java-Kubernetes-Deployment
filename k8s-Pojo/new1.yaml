@@ -1,0 +1,15 @@
+apiVersion: apps/V1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  containers:
+  - containerPorts:
+    - containerPort: 80
+    image: nginx:1.7.0
+    name: nginx
+  minReadySeconds: 0
+  paused: false
+  progressDeadlineSeconds: 0
+  replicas: 0
+  revisionHistoryLimit: 0
