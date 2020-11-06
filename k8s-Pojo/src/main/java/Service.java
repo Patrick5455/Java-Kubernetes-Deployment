@@ -1,6 +1,5 @@
 import io.kubernetes.client.openapi.ApiException;
 import kubernetes.models.k8s.*;
-import kubernetes.services.K8sClientDeployment;
 import kubernetes.services.k8sYamlDeployment;
 
 import java.io.File;
@@ -14,7 +13,7 @@ public class Service {
 
 
 
-//       String message = k8sYamlDeployment.useK8sClient(K8sClientDeployment.testNow()) + " DOne";
+//       String message = k8sYamlDeployment.useK8sClient(TestClientApi.testNow());
 
 
         HashMap<String, String> labels = new HashMap<>();
@@ -56,16 +55,16 @@ public class Service {
                         .build())
                 //Deployment metadata
                 .metadata(ObjectMeta.builder()
-                        .name("latest-nginx-deployment3")
+                        .name("latest-nginx-deployment4")
                         .build())
                 .build();
 
 
-                File file = k8sYamlDeployment.createManifestFile(deploymentYaml);
+                File file = k8sYamlDeployment.createCustomManifestFile(deploymentYaml);
 
 
 
-        String message2 = k8sYamlDeployment.executeComplexDeploy(deploymentYaml);
+        String message2 = k8sYamlDeployment.executeCustomComplexDeploy(deploymentYaml);
 //
        System.out.println(message2);
 

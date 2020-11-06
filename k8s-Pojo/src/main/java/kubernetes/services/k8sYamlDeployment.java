@@ -1,11 +1,15 @@
 package kubernetes.services;
 
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.models.*;
 import kubernetes.models.k8s.DeploymentYaml;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class k8sYamlDeployment {
@@ -28,24 +32,22 @@ public class k8sYamlDeployment {
     public static final String DESCRIBE_SERVICE_COMMAND = "kubectl describe services";
     public static final String ROLL_OUT_STATUS_COMMAND = "kubectl rollout status";
 
-
-
     //k8sYamlDeployment Status Code
     public static final Long NOT_SUCCESSFUL = 404L;
 
 
     //k8sYamlDeployment Status Message
-
     public static final String SUCCESS_DEPLOY_MESSAGE = "SUCCESSFUL_DEPLOYMENT";
-    public static final String FAILURE_DEPLOY_MESSAGE = "PROCESSING_DEPLOYMENT";
+    public static final String FAILURE_DEPLOY_MESSAGE = "FAILED DEPLOYMENT";
     public static final String PROCESSING_DEPLOY_MESSAGE = "PROCESSING_DEPLOYMENT";
-    //TODO: Add logic if deployment already exists. This returns "already exists on terminal"
-    private static final String EXIST_DEPLOY = "k8sYamlDeployment already exists";
+    private static final String EXISTING_DEPLOYMENT = "DEPLOYMENT ALREADY EXISTS";
 
     //Filenames
     private static final String simpleDeployBashFileName = "simple-deploy.sh";
     private static final String complexDeployBashFileName = "complex-deploy.sh";
-    private static final String yamlFileName = "deployment.yaml";
+    private static final String customYamlFileName = "custom-deployment.yaml";
+    private static final String presetYamlFileName = "preset-deployment.yaml";
+
 
     //kubectl commands to write to bash file
     public static String getSimpleDeployCommand(String deploymentName, String imageName){
@@ -58,15 +60,117 @@ public class k8sYamlDeployment {
         File file = new File(fileName);
         FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
         fileWriter.write(command);
-
         fileWriter.flush();
         fileWriter.close();
-        System.out.printf("Done writing command %s to bash file  %s%n",command ,file.getAbsoluteFile());
+        System.out.printf("Done writing command: %s to --> %nbash file:  %s%n%n",command ,file.getAbsoluteFile());
         return file.getAbsolutePath();
     }
 
 
-    public  static String executeSimpleDeploy(String command) throws IOException {
+
+
+    public static File createCustomManifestFile(DeploymentYaml deploymentYamlParams) throws IOException {
+
+        // Other Parameters will be added as needs be
+        DeploymentYaml deploymentYaml = DeploymentYaml.builder()
+                .apiVersion(deploymentYamlParams.getApiVersion())
+                .kind(deploymentYamlParams.getKind())
+                .metadata(deploymentYamlParams.getMetadata())
+                .spec(deploymentYamlParams.getSpec())
+                .build();
+
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        options.setPrettyFlow(true);
+        File manifestFIle=null;
+
+        try {
+            File file = new File(customYamlFileName);
+            FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
+            Yaml yaml = new Yaml(options);
+            yaml.dump(deploymentYaml, fileWriter);
+            manifestFIle = file.getAbsoluteFile();
+            System.out.println(yaml.dump(deploymentYaml));
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        return manifestFIle ;
+    }
+
+    public static File createPresetManifestFile() throws IOException, ApiException {
+
+        V1ContainerPort nginxPort = new V1ContainerPort();
+        nginxPort.setContainerPort(90);
+
+        //Nginx Container
+        V1Container nginxContainer = new V1Container();
+        nginxContainer.setName("nginx");
+        nginxContainer.setImage("nginx:1.7.9");
+        nginxContainer.setPorts(Arrays.asList(nginxPort));
+
+        //Pod spec
+        V1PodSpec podSpec = new V1PodSpec();
+        podSpec.addContainersItem(nginxContainer);
+
+        //Pod metadata
+        HashMap<String, String> labels = new HashMap<>();
+        labels.put("app", "nginx");
+        V1ObjectMeta podMetadata = new V1ObjectMeta();
+        podMetadata.setLabels(new HashMap<>(labels));
+
+        //Pod template
+        V1PodTemplateSpec podTemplateSpec = new V1PodTemplateSpec();
+        podTemplateSpec.setMetadata(podMetadata);
+        podTemplateSpec.setSpec(podSpec);
+
+        //Pod Selector
+        V1LabelSelector podSelector = new V1LabelSelector();
+        podSelector.setMatchLabels(new HashMap<>(labels));
+
+        //Deployment spec - assemble Pod Selector and Pod Template
+        V1DeploymentSpec deploymentSpec = new V1DeploymentSpec();
+        deploymentSpec.setSelector(podSelector);
+        deploymentSpec.setTemplate(podTemplateSpec);
+
+        //Deployment metadata
+        V1ObjectMeta deploymentMetadata = new V1ObjectMeta();
+        deploymentMetadata.setName("new-nginx-deployment");
+
+        //Assemble Deployment from deploymentMetadata + deploymentSpec
+        V1Deployment deployment = new V1Deployment();
+        deployment.setApiVersion("apps/v1");
+        deployment.setKind("Deployment");
+        deployment.setMetadata(deploymentMetadata);
+        deployment.setSpec(deploymentSpec);
+
+//Optionally Dump the YAML manifest
+        System.out.println(io.kubernetes.client.util.Yaml.dump(deployment));
+
+        File file = new File(presetYamlFileName);
+        FileWriter fileWriter = new FileWriter(file);
+
+        fileWriter.write(io.kubernetes.client.util.Yaml.dump(deployment));
+        fileWriter.flush();
+        fileWriter.close();
+        System.out.println(file.getAbsoluteFile());
+
+
+        //Optionally call K8S API server directly
+//        ApiClient client = Config.defaultClient();
+//        Configuration.setDefaultApiClient(client);
+//        AppsV1Api appsApi = new AppsV1Api();
+//        appsApi.createNamespacedDeployment(
+//                "hello world",
+//                deployment, //This is the V1Deployment object
+//                null,
+//                null,
+//                null
+//        );
+
+        return file;
+    }
+
+    public  static String executeSimpleDeploy(String command) throws IOException, InterruptedException {
         deploymentStatusMessage = FAILURE_DEPLOY_MESSAGE;
         try {
             String[] cmd = {"sh", writeCommandToBashFile(simpleDeployBashFileName, command)};
@@ -85,55 +189,28 @@ public class k8sYamlDeployment {
             if(builder.toString().contains("created")){
                 deploymentStatusMessage = SUCCESS_DEPLOY_MESSAGE;
             }
+            else if (builder.toString().contains("configured")){
+                deploymentStatusMessage = EXISTING_DEPLOYMENT;
+            }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-        return deploymentStatusMessage;
+        return String.format( "Deployment Status:  %s", deploymentStatusMessage);
     }
 
-
-    public static File createManifestFile(DeploymentYaml deploymentYamlParams) throws IOException {
-        // Other Parameters will be added as needs be
-
-        DeploymentYaml deploymentYaml = DeploymentYaml.builder()
-                .apiVersion(deploymentYamlParams.getApiVersion())
-                .kind(deploymentYamlParams.getKind())
-                .metadata(deploymentYamlParams.getMetadata())
-                .spec(deploymentYamlParams.getSpec())
-                //   .spec(deploymentYamlParams.getSpec())
-                .build();
-
-        DumperOptions options = new DumperOptions();
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        options.setPrettyFlow(true);
-        File manifestFIle=null;
-        try {
-            File file = new File(yamlFileName);
-            FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
-            Yaml yaml = new Yaml(options);
-            yaml.dump(deploymentYaml, fileWriter);
-            manifestFIle = file.getAbsoluteFile();
-            System.out.println(yaml.dump(deploymentYaml));
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-        return manifestFIle ;
-    }
-
-    public  static String executeComplexDeploy(DeploymentYaml deploymentYamlParams) throws IOException {
+    public  static String executeCustomComplexDeploy(DeploymentYaml deploymentYamlParams) throws IOException {
         deploymentStatusMessage = FAILURE_DEPLOY_MESSAGE;
+        File file = createCustomManifestFile(deploymentYamlParams);
 
-        File file = createManifestFile(deploymentYamlParams);
         try {
             String[] cmd = {"sh", writeCommandToBashFile(complexDeployBashFileName, getComplexDeployCommand(file.getAbsolutePath()))};
             Process p = Runtime.getRuntime().exec(cmd);
-            System.out.println("DOne Executing");
+            System.out.println("Done Executing bash command!\n");
 
             p.waitFor();
+            System.out.println("Getting Response -->");
             BufferedReader reader=new BufferedReader(new InputStreamReader(
                     p.getInputStream()));
-            System.out.println("Getting Response --> \n");
-
 
             String line;
             StringBuilder builder = new StringBuilder();
@@ -145,50 +222,17 @@ public class k8sYamlDeployment {
             System.out.println(builder.toString());
             if(builder.toString().contains("created")){
                 deploymentStatusMessage = SUCCESS_DEPLOY_MESSAGE;
-                System.out.println("Created");
+            }
+            else if (builder.toString().contains("configured")){
+                deploymentStatusMessage = EXISTING_DEPLOYMENT;
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-        return deploymentStatusMessage;
+        return String.format( "\nDeployment Status:  %s", deploymentStatusMessage);
     }
 
-//    public static DeploymentStatus setGrpcDeploymentStatus(String deploymentStatusMessage){
-//        return DeploymentStatus.valueOf(deploymentStatusMessage);
-//    }
 
-
-
-    public static String useK8sClient(File file){
-
-        deploymentStatusMessage = FAILURE_DEPLOY_MESSAGE;
-
-        try {
-            String[] cmd = {"sh", writeCommandToBashFile(complexDeployBashFileName, getComplexDeployCommand(file.getAbsolutePath()))};
-            Process p = Runtime.getRuntime().exec(cmd);
-            System.out.println("DOne Executing");
-            p.waitFor();
-            BufferedReader reader=new BufferedReader(new InputStreamReader(
-                    p.getInputStream()));
-            System.out.println("Getting Response");
-
-
-            String line;
-            StringBuilder builder = new StringBuilder();
-
-            while((line = reader.readLine()) != null) {
-                builder.append(line);
-                System.out.println(line);
-            }
-            if(builder.toString().contains("created")){
-                deploymentStatusMessage = SUCCESS_DEPLOY_MESSAGE;
-                System.out.println("Created");
-            }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return deploymentStatusMessage;
-    }
 
 
 }

@@ -10,9 +10,6 @@ import io.kubernetes.client.openapi.models.*;
 import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.Yaml;
 import kubernetes.models.k8s.DeploymentYaml;
-import kubernetes.models.k8s.KindTypes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -20,29 +17,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
-
-import io.kubernetes.client.openapi.ApiClient;
-import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.Configuration;
-import io.kubernetes.client.openapi.JSON;
-import io.kubernetes.client.openapi.apis.AppsV1Api;
-import io.kubernetes.client.openapi.models.*;
-import io.kubernetes.client.proto.Meta;
-import io.kubernetes.client.proto.V1beta1Apiextensions;
-import io.kubernetes.client.util.Config;
-import io.kubernetes.client.util.Yaml;
-import kubernetes.models.k8s.*;
-import kubernetes.services.K8sClientDeployment;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-public class K8sClientDeployment {
+public class TestClientApi {
 
    private Yaml yaml;
 
@@ -178,7 +153,7 @@ public class K8sClientDeployment {
 //        fileWriter.close();
 //       System.out.println(file.getAbsoluteFile());
 //
-//        K8sClientDeployment.createSimpleDeployment(deploymentYaml);
+//        TestClientApi.createSimpleDeployment(deploymentYaml);
 
 
     public static File testNow() throws IOException, ApiException {

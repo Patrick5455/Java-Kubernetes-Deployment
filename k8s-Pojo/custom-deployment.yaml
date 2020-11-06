@@ -1,0 +1,55 @@
+!!kubernetes.models.k8s.DeploymentYaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  UID: null
+  labels: null
+  name: latest-nginx-deployment4
+  namespace: null
+spec:
+  container: null
+  containers: null
+  minReadySeconds: 0
+  paused: false
+  replicas: 0
+  revisionHistoryLimit: 0
+  selector:
+    labels: null
+    matchExpressions: null
+    matchLabels:
+      app: nginx
+  strategy: null
+  template:
+    metadata:
+      UID: null
+      labels:
+        app: nginx
+      name: null
+      namespace: null
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - image: nginx:1.7.9
+        name: nginx
+        port: null
+        ports:
+        - containerPort: 90
+      dnsPolicy: null
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      hostname: null
+      nodeName: null
+      preemptionPolicy: null
+      priority: 0
+      priorityClassName: null
+      restartPolicy: null
+      runtimeClassName: null
+      schedulerName: null
+      serviceAccount: null
+      serviceAccountName: null
+      setHostnameAsFQDN: false
+      shareProcessNamespace: false
+      subdomain: null
+      terminationGracePeriodSeconds: 0

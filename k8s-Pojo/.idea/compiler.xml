@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="yamlPojo" />
+        <module name="k8s-Pojo" />
       </profile>
     </annotationProcessing>
   </component>

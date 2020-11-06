@@ -1,1 +1,1 @@
-kubectl apply -f /home/patrick/Documents/dev/programs/personal_programs/yamlPojo/deployment.yaml
+kubectl apply -f /home/patrick/Documents/dev/programs/personal_programs/MlOps/java-k8s-deployment/k8s-Pojo/custom-deployment.yaml
