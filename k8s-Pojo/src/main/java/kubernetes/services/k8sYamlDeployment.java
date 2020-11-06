@@ -56,6 +56,7 @@ public class k8sYamlDeployment {
     public static String getComplexDeployCommand(String yamlFileName){
         return String.format("%s %s", COMPLEX_DEPLOY_COMMAND, yamlFileName); }
 
+    //Write commands to a bash file
     private static String writeCommandToBashFile(String fileName, String command) throws IOException {
         File file = new File(fileName);
         FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
@@ -67,8 +68,9 @@ public class k8sYamlDeployment {
     }
 
 
-
-
+    /**
+     * Collects builder object of DeploymentYaml to convert to yaml file
+     * **/
     public static File createCustomManifestFile(DeploymentYaml deploymentYamlParams) throws IOException {
 
         // Other Parameters will be added as needs be
