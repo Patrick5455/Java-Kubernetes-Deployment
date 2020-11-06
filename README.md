@@ -2,7 +2,7 @@
 
 ### About:  This Repository aims to demosntrate how to programmatically automate deployments to Kubernetes via Java (other languages like go & python to be added)
 
-### Gnere: MLOps
+### Genre MLOps
 
 ### Status: WIP -- Contributions are welcome 
 
