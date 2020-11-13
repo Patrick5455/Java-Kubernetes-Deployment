@@ -11,7 +11,7 @@
 
 #### Status: 
 
-- WIP -- Contributions are welcome. You can reach out here -> ([@Patrick 0junde](https://twitter.com/patrickojunde))
+- WIP -- Contributions are welcome. You can reach out here -> ([tweet](https://twitter.com/patrickojunde))
 
 
     > Convert More K8s objects to Pojo
