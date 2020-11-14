@@ -20,6 +20,8 @@
     
     > Develop a rest api to send yaml content as json and automate deployment
     
+    > 3-Phased Deployment (Deployment -> Service -> Ingress(Using nginx))
+    
     
 #### Dependencies:
 
